@@ -43,7 +43,7 @@ LOG = logging.getLogger(__name__)
 
 DAYS_IN_MONTH = 30
 EXPIRE_WARNING_THRESHOLD = datetime.timedelta(days=DAYS_IN_MONTH)
-REGION = 'default'
+REGION = "default"
 FILES_ENCODING = "utf-8"
 JWT_LIFETIME = 25
 JWT_MAX_CLOCK_SKEW = 180
@@ -56,7 +56,9 @@ MIN_V2 = (2, 7)
 VERSION_WARNING = """Only the following Python versions are supported:
 Python2: >= {},
 Python3: >= {}
-""".format(MIN_V2, MIN_V3)
+""".format(
+    MIN_V2, MIN_V3
+)
 
 assert MIN_V2 <= PYTHON < (3, 0) or MIN_V3 <= PYTHON, VERSION_WARNING
 
@@ -105,9 +107,9 @@ class Credentials(object):
         :rtype: Credentials
         """
         try:
-            client_id = credentials_data['client_id']
-            client_secret = credentials_data['client_secret']
-            expire_time = credentials_data['expiration_date']
+            client_id = credentials_data["client_id"]
+            client_secret = credentials_data["client_secret"]
+            expire_time = credentials_data["expiration_date"]
         except KeyError as key:
             message = "Credentials missing key: '{}'".format(key)
             LOG.error(message)
@@ -156,9 +158,7 @@ class Credentials(object):
         try:
             expires_at = int(expires_at)
         except ValueError:
-            message = "Bad credentials expiration date format: '{}'".format(
-                expires_at
-            )
+            message = "Bad credentials expiration date format: '{}'".format(expires_at)
             LOG.error(message)
             raise BEAPValidationError(message)
 
@@ -190,15 +190,15 @@ class Credentials(object):
         """
         now = time.time()
         payload = {
-            'iss': self.client_id,
-            'iat': int(now - JWT_MAX_CLOCK_SKEW),
-            'nbf': int(now - JWT_MAX_CLOCK_SKEW),
-            'exp': int(now + JWT_MAX_CLOCK_SKEW + JWT_LIFETIME),
-            'region': region,
-            'path': path,
-            'method': method,
-            'host': host,
-            'jti': str(uuid.uuid4()),
+            "iss": self.client_id,
+            "iat": int(now - JWT_MAX_CLOCK_SKEW),
+            "nbf": int(now - JWT_MAX_CLOCK_SKEW),
+            "exp": int(now + JWT_MAX_CLOCK_SKEW + JWT_LIFETIME),
+            "region": region,
+            "path": path,
+            "method": method,
+            "host": host,
+            "jti": str(uuid.uuid4()),
         }
         key = self.client_secret
 
@@ -214,9 +214,15 @@ class BEAPAdapter(requests.adapters.HTTPAdapter):
     can be overridden by constructor parameters.
     """
 
-    def __init__(self, credentials, api_version='2',
-                 retry_max_attempt_number=3, retry_backoff_factor=1,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        credentials,
+        api_version="2",
+        retry_max_attempt_number=3,
+        retry_backoff_factor=1,
+        *args,
+        **kwargs
+    ):
         """
         Initialize the connectivity adapter directly with a ``Credentials``
         tuple.
@@ -229,11 +235,12 @@ class BEAPAdapter(requests.adapters.HTTPAdapter):
                {delay} = {backoff retry_backoff_factor} * (2 ** ({number of total retries} - 1))
         :type retry_backoff_factor: int
         """
-        logging.getLogger('urllib3.util.retry').setLevel(logging.DEBUG)
-        retry_strategy = Retry(total=retry_max_attempt_number,
-                               status_forcelist=[429],
-                               backoff_factor=retry_backoff_factor
-                               )
+        logging.getLogger("urllib3.util.retry").setLevel(logging.DEBUG)
+        retry_strategy = Retry(
+            total=retry_max_attempt_number,
+            status_forcelist=[429],
+            backoff_factor=retry_backoff_factor,
+        )
         super(BEAPAdapter, self).__init__(max_retries=retry_strategy, *args, **kwargs)
         self.credentials = credentials
         self.api_version = api_version
@@ -250,44 +257,54 @@ class BEAPAdapter(requests.adapters.HTTPAdapter):
         :type: requests.Response
         """
         url = urlparse(request.url)
-        token = self.credentials.generate_token(url.path,
-                                                request.method,
-                                                url.hostname)
-        request.headers['JWT'] = token
-        request.headers['api-version'] = self.api_version
+        token = self.credentials.generate_token(url.path, request.method, url.hostname)
+        request.headers["JWT"] = token
+        request.headers["api-version"] = self.api_version
 
-        LOG.info("Request being sent to HTTP server: %s, %s, %s", request.method, request.url, request.headers)
+        LOG.info(
+            "Request being sent to HTTP server: %s, %s, %s",
+            request.method,
+            request.url,
+            request.headers,
+        )
 
         response = super(BEAPAdapter, self).send(request, **kwargs)
 
-        latest_api_version = response.headers.get('latest-api-version')
+        latest_api_version = response.headers.get("latest-api-version")
         if latest_api_version and self.api_version != latest_api_version:
             LOG.info(
-                'You are using HAPI version %s; '
-                'however, version %s is available',
+                "You are using HAPI version %s; " "however, version %s is available",
                 self.api_version,
-                latest_api_version
+                latest_api_version,
             )
 
-        if response.status_code in (requests.codes.forbidden,
-                                    requests.codes.unauthorized):
+        if response.status_code in (
+            requests.codes.forbidden,
+            requests.codes.unauthorized,
+        ):
             LOG.error(
-                'Either supplied credentials are invalid or expired, '
-                'or the requesting IP address is not on the allowlist.'
+                "Either supplied credentials are invalid or expired, "
+                "or the requesting IP address is not on the allowlist."
             )
 
         if LOG.isEnabledFor(logging.INFO):
             if response.is_redirect:
-                LOG.info("Redirecting to %s://%s%s", url.scheme, url.hostname, response.headers.get("Location"))
+                LOG.info(
+                    "Redirecting to %s://%s%s",
+                    url.scheme,
+                    url.hostname,
+                    response.headers.get("Location"),
+                )
             else:
                 LOG.info("Request: %s, %s", request.method, request.url)
                 status_message = http_lib.responses[response.status_code]
 
-                LOG.info("Response status: %s - %s",
-                         response.status_code,
-                         status_message)
-                LOG.info("Response x-request-id: %s",
-                         response.headers.get("x-request-id"))
+                LOG.info(
+                    "Response status: %s - %s", response.status_code, status_message
+                )
+                LOG.info(
+                    "Response x-request-id: %s", response.headers.get("x-request-id")
+                )
 
                 stream = kwargs.get("stream")
 
@@ -297,8 +314,7 @@ class BEAPAdapter(requests.adapters.HTTPAdapter):
         return response
 
 
-def download(session_, url_, out_path, chunk_size=2048,
-                          stream=True, headers=None):
+def download(session_, url_, out_path, chunk_size=2048, stream=True, headers=None):
     """
     Function to download the data to an output directory.
 
@@ -312,7 +328,7 @@ def download(session_, url_, out_path, chunk_size=2048,
     Set 'chunk_size' to a larger byte size to speed up download process on
     larger downloads.
     """
-    headers = headers or {'Accept-Encoding': 'gzip'}
+    headers = headers or {"Accept-Encoding": "gzip"}
     with session_.get(url_, stream=stream, headers=headers) as response_:
         response_.raise_for_status()
 
@@ -321,20 +337,22 @@ def download(session_, url_, out_path, chunk_size=2048,
             os.makedirs(parent_path)
         except OSError as err:
             if err.errno != errno.EEXIST:
-                LOG.exception('Could not create output directory %s', parent_path)
+                LOG.exception("Could not create output directory %s", parent_path)
                 raise
 
-        if "gzip" in response_.headers['Content-Encoding']:
-            out_path = '{out}.gz'.format(out=out_path)
+        if "gzip" in response_.headers["Content-Encoding"]:
+            out_path = "{out}.gz".format(out=out_path)
 
-        with open(out_path, 'wb') as out_file:
-            LOG.info('Loading file from: %s (can take a while) ...', url_)
+        with open(out_path, "wb") as out_file:
+            LOG.info("Loading file from: %s (can take a while) ...", url_)
             for chunk in response_.raw.stream(chunk_size, decode_content=False):
                 out_file.write(chunk)
 
-            LOG.info('\tContent-Disposition: %s', response_.headers['Content-Disposition'])
-            LOG.info('\tContent-Encoding: %s', response_.headers['Content-Encoding'])
-            LOG.info('\tContent-Length: %s bytes', response_.headers['Content-Length'])
-            LOG.info('\tContent-Type: %s', response_.headers['Content-Type'])
-            LOG.info('\tFile downloaded to: %s', out_path)
+            LOG.info(
+                "\tContent-Disposition: %s", response_.headers["Content-Disposition"]
+            )
+            LOG.info("\tContent-Encoding: %s", response_.headers["Content-Encoding"])
+            LOG.info("\tContent-Length: %s bytes", response_.headers["Content-Length"])
+            LOG.info("\tContent-Type: %s", response_.headers["Content-Type"])
+            LOG.info("\tFile downloaded to: %s", out_path)
             return response_

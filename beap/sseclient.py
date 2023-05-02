@@ -23,12 +23,12 @@ LOG = logging.getLogger(__name__)
 class SSEEvent:
     """Representation of an event from the SSE stream."""
 
-    SSE_LINE_PATTERN = re.compile('(?P<name>[^:]*):?( ?(?P<value>.*))?')
+    SSE_LINE_PATTERN = re.compile("(?P<name>[^:]*):?( ?(?P<value>.*))?")
 
     def __init__(self, event_string):
         self.data = None
         self.comments = None
-        self.type = 'message'
+        self.type = "message"
         self.event_id = None
         self.retry = None
         self._parse(event_string)
@@ -42,35 +42,35 @@ class SSEEvent:
         comment_elements = []
 
         for line in event_string.splitlines():
-            if line.startswith(':'):  # log comment and keep processing
+            if line.startswith(":"):  # log comment and keep processing
                 LOG.info("Found comment in message: %s", line)
                 comment_elements.append(line[1:])
                 continue
 
             match = self.SSE_LINE_PATTERN.match(line)
             if match is None:
-                LOG.error('Invalid SSE line: %s', line)
+                LOG.error("Invalid SSE line: %s", line)
                 continue
 
-            name = match.group('name')
-            value = match.group('value')
-            if name == 'data':
+            name = match.group("name")
+            value = match.group("value")
+            if name == "data":
                 data_elements.append(value)
-            elif name == 'event':
+            elif name == "event":
                 self.type = value
-            elif name == 'id':
+            elif name == "id":
                 self.event_id = value
-            elif name == 'retry':
+            elif name == "retry":
                 self.retry = int(value)
 
-        self.data = '\n'.join(data_elements)
-        self.comments = '\n'.join(comment_elements)
+        self.data = "\n".join(data_elements)
+        self.comments = "\n".join(comment_elements)
 
     def is_heartbeat(self):
-        return self.data is None or self.data == ''
+        return self.data is None or self.data == ""
 
     def __str__(self):
-        return 'Event(id={}, event={}, retry={}, data={})'.format(
+        return "Event(id={}, event={}, retry={}, data={})".format(
             self.event_id, self.type, self.retry, self.data
         )
 
@@ -93,10 +93,12 @@ class SSEClient:
         self.url = url
         self.event_source = None
         self.headers = headers or {}
-        self.headers.update({
-            'Cache-Control': 'no-cache',
-            'Accept': 'text/event-stream',
-        })
+        self.headers.update(
+            {
+                "Cache-Control": "no-cache",
+                "Accept": "text/event-stream",
+            }
+        )
         self.last_id = None
         self.event_iterator = None
         self.retry_interval = SSEClient.DEFAULT_RETRY_INTERVAL_IN_MS / 1000.0
@@ -110,29 +112,27 @@ class SSEClient:
             source
         """
         self.disconnect()
-        LOG.info('Sleeping for %s seconds before reconnecting',
-                 sleep_after_disconnect)
+        LOG.info("Sleeping for %s seconds before reconnecting", sleep_after_disconnect)
         sleep(sleep_after_disconnect)
         self._connect()
 
     @retry(
-        retry_on_exception=lambda exc: isinstance(exc,
-                                                  requests.RequestException),
-        stop_max_attempt_number=MAX_ATTEMPTS
+        retry_on_exception=lambda exc: isinstance(exc, requests.RequestException),
+        stop_max_attempt_number=MAX_ATTEMPTS,
     )
     def _connect(self):
         if self.last_id:
-            self.headers['Last-Event-ID'] = self.last_id
-        LOG.info('Opening connection to SSE server on %s', self.url)
-        self.event_source = self.session.get(self.url,
-                                             stream=True,
-                                             headers=self.headers)
-        LOG.info('Connection established')
+            self.headers["Last-Event-ID"] = self.last_id
+        LOG.info("Opening connection to SSE server on %s", self.url)
+        self.event_source = self.session.get(
+            self.url, stream=True, headers=self.headers
+        )
+        LOG.info("Connection established")
         self.event_iterator = self._iter_events()
         self.event_source.raise_for_status()
 
     def disconnect(self):
-        LOG.info('Closing the connection to the SSE server on %s', self.url)
+        LOG.info("Closing the connection to the SSE server on %s", self.url)
         try:
             self.event_source.close()
         except requests.RequestException:
@@ -143,13 +143,13 @@ class SSEClient:
         :returns generator(str), generates strings representing single SSE
             messages
         """
-        data = ''
+        data = ""
         for chunk in self.event_source:
             for line in chunk.splitlines(True):
-                data += line.decode('utf-8')
-                if data.endswith(('\r\r', '\n\n', '\r\n\r\n')):
+                data += line.decode("utf-8")
+                if data.endswith(("\r\r", "\n\n", "\r\n\r\n")):
                     yield data
-                    data = ''
+                    data = ""
         if data:
             yield data
 
@@ -169,12 +169,11 @@ class SSEClient:
             self.last_id = event.event_id or self.last_id
             return event
         except requests.exceptions.ChunkedEncodingError:
-            LOG.info("Connection to SSE server dropped. "
-                     "Will attempt to reconnect")
+            LOG.info("Connection to SSE server dropped. " "Will attempt to reconnect")
 
             self.bounce_connection(sleep_after_disconnect=self.retry_interval)
             raise
         except Exception:
-            LOG.exception('Error when reading event from the SSE server')
+            LOG.exception("Error when reading event from the SSE server")
             self.bounce_connection(sleep_after_disconnect=self.retry_interval)
             raise
