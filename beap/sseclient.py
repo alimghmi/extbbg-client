@@ -1,7 +1,4 @@
 """
-Module containing classes to faciliate reading Server-Sent Events
-See [README](../README.html) for more details.
-
 All materials Copyright 2021 Bloomberg Finance L.P. For use, distribution
 and/or publication solely in accordance with applicable license agreements
 entered into between Bloomberg Finance L.P. or its affiliates and end user.
@@ -15,9 +12,6 @@ import requests
 from retrying import retry
 
 LOG = logging.getLogger(__name__)
-
-
-##############################################################################
 
 
 class SSEEvent:
