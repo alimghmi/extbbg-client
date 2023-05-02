@@ -1,0 +1,10 @@
+pandas
+python-decouple
+requests
+pyodbc
+sqlalchemy
+fast-to-sql
+enum34
+retrying
+PyJWT
+pytz
