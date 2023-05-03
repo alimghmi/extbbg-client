@@ -1,0 +1,7 @@
+{
+    "app_name": "pcs",
+    "description": "WIP",
+    "table": "schema.table",
+    "tickers_query": "select * from schema.table",
+    "parsed_ticker_template": {}
+}
