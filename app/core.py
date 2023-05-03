@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 import os
 import json
 import uuid
@@ -11,8 +8,8 @@ import datetime
 import pandas as pd
 from urllib.parse import urljoin
 
-from client.sseclient import SSEClient
-from database.connection import MSSQLDatabase
+from database.mssql import MSSQLDatabase
+from beap.sseclient import SSEClient
 from beap.beap_auth import Credentials, BEAPAdapter, download
 
 

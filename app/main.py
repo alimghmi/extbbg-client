@@ -1,5 +1,5 @@
-from client.core import Beap
-from client import loader
+from app.core import Beap
+from app import loader
 
 
 ISIN_MODE = True
