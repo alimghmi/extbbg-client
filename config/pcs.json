@@ -1,0 +1,10 @@
+{
+    "app_name": "pcs",
+    "description": "WIP",
+    "input": {
+        "table": "etl.v_extbbg_pcs",
+        "columns": ["isin", "pcs_all"]
+    },
+    "output_table": "etl.extbbg_pcs",
+    "parsed_ticker_template": {}
+}
