@@ -1,4 +1,5 @@
 import datetime
+import gzip
 import json
 import logging
 import os
@@ -22,7 +23,7 @@ class Client:
     HOST = "https://api.bloomberg.com"
     LISTENER_TIMEOUT_MIN = 45
 
-    def __init__(self, credential):
+    def __init__(self, credential, config):
         """
         Initialize the Client class.
 
@@ -31,8 +32,8 @@ class Client:
         """
         self.status = False
         self.dataframe = None
+        self.config = config
         self.session_id = self.random_id()
-        self.account_url = self.get_catalog()
         self.log = logging.getLogger(__name__)
         self.credential = Credentials.from_file(credential)
         self.initialize_sse_client()
@@ -48,6 +49,7 @@ class Client:
             self.sse_client = SSEClient(
                 urljoin(self.HOST, "/eap/notifications/sse"), self.session
             )
+            self.account_url = self.get_catalog()
         except requests.exceptions.HTTPError as err:
             self.log.error(err)
 
@@ -78,7 +80,7 @@ class Client:
             except KeyError:
                 self.log.info("Received other event type, continue waiting")
             else:
-                is_required_reply = "{}.csv".format(request_id) == distribution_id
+                is_required_reply = "{}.json".format(request_id) == distribution_id
                 is_same_catalog = reply_catalog_id == self.catalog_id
 
                 if not is_required_reply or not is_same_catalog:
@@ -94,16 +96,13 @@ class Client:
                     self.session, reply_url, output_file_path, headers=headers
                 )
                 self.log.info("Reply was downloaded")
-                self.dataframe = pd.read_csv(
-                    output_file_path + ".gz",
-                    compression="gzip",
-                    header=0,
-                    sep=",",
-                    quotechar='"',
-                    error_bad_lines=False,
-                )
+                self.log.info("Prasing the downloaded json")
+                with gzip.open(output_file_path + ".gz", 'rt', encoding='utf-8') as f:
+                    json_data = json.load(f)
+
+                self.dataframe = pd.json_normalize(json_data)
                 self.status = True
-                break
+                return self.dataframe
         else:
             self.log.info("Reply NOT delivered, try to increase waiter loop timeout")
 
@@ -130,7 +129,7 @@ class Client:
 
         return request_url, request_id
 
-    def get_tigger(self):
+    def get_trigger(self):
         trigger_url = urljoin(self.account_url, "triggers/executeNow")
         return trigger_url
 
@@ -155,7 +154,7 @@ class Client:
         self.log.info("Scheduled catalog URL: %s", account_url)
         return account_url
 
-    def create_universe(self, title, description, tickers):
+    def create_universe(self, tickers):
         """
         Create a universe with the given title and tickers.
         """
@@ -164,8 +163,8 @@ class Client:
         universe_payload = {
             "@type": "Universe",
             "identifier": universe_id,
-            "title": title,
-            "description": description,
+            "title": self.config['app_name'],
+            "description": self.config['description'],
             "contains": tickers,
         }
 
@@ -187,7 +186,7 @@ class Client:
 
     def __save__(self):
         pass
-
+    
     def parse_tickers(self, tickers):
         pass
 
@@ -198,3 +197,11 @@ class Client:
         """
         uid = str(uuid.uuid1())[:6]
         return datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S") + uid
+
+    @staticmethod
+    def create_identifier_template(identifier_type):
+        return {
+            '@type': 'Identifier',
+            'identifierType': identifier_type,
+            'identifierValue': None,
+        }
