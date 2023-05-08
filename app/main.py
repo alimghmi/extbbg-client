@@ -1,7 +1,7 @@
 import importlib
+import logging
 import os
 import sys
-import logging
 
 from decouple import config
 
@@ -15,9 +15,13 @@ logging.basicConfig(
 APP = config("APP", cast=str)
 logger = logging.getLogger(__name__)
 
+
 def app_exist(app):
     path = os.path.dirname(__file__)
-    return app in (entry for entry in os.listdir(path) if os.path.isdir(os.path.join(path, entry)))
+    return app in (
+        entry for entry in os.listdir(path) if os.path.isdir(os.path.join(path, entry))
+    )
+
 
 def load_app(app):
     if not app_exist(app):
@@ -33,16 +37,16 @@ def load_app(app):
         app_config["input"]["table"], app_config["input"]["columns"]
     )
     client_class = getattr(importlib.import_module("client"), "Client")
-    return loader_instance, client_class, app_config 
+    return loader_instance, client_class, app_config
 
 
 def main():
-    logger.info(f'Launching {APP} App...')
     loader, Client, app_config = load_app(APP)
+    logger.info(f"Launching {APP} App...")
     tickers = loader.fetch()
-    client = Client('credential.txt', app_config)
+    client = Client("credential.txt", app_config)
     universe = client.create_universe(tickers)
-    field = app_config['field_url']
+    field = app_config["field_url"]
     trigger = client.get_trigger()
     client.request(universe, field, trigger)
     client.listen()
