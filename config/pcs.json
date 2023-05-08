@@ -1,10 +1,11 @@
 {
     "app_name": "pcs",
-    "description": "WIP",
+    "description": "PCS App",
+    "is_identifier_isin": true,
     "input": {
         "table": "etl.v_extbbg_pcs",
         "columns": ["isin", "pcs_all"]
     },
     "output_table": "etl.extbbg_pcs",
-    "parsed_ticker_template": {}
+    "field_url": "https://api.bloomberg.com/eap/catalogs/793986/fieldLists/f20220605065114e46e10/"
 }
