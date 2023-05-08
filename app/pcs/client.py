@@ -1,5 +1,5 @@
-from app.client import Client
+from app import client
 
 
-class PCSClient(Client):
+class Client(client.Client):
     pass
