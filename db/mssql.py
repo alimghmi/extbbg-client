@@ -7,7 +7,11 @@ import pandas as pd
 from decouple import config
 from fast_to_sql import fast_to_sql
 from sqlalchemy import create_engine
-       
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] [%(name)s:%(lineno)s]: %(message)s",
+)       
 warnings.filterwarnings("ignore")
 
 
