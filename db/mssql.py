@@ -94,5 +94,5 @@ class MSSQLDatabase(object):
         """
         Reopen the connection to the database if it is closed.
         """
-        if not self.cnx or self.cnx.connected:
+        if not self.cnx or not self.cnx.connected:
             self.cnx = pyodbc.connect(self.CNX_STRING)
