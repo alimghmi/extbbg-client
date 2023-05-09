@@ -7,6 +7,6 @@
         "columns": ["bbg_comp_ticker"],
         "where": "where eod_price_source = 'bbg' and active = 'true'"
     },
-    "output_table": "etl.extbbg_pcs",
+    "output_table": "etl.extbbg_last_eod",
     "field_url": "https://api.bloomberg.com/eap/catalogs/793986/fieldLists/f20220313073336e4ed00/"
 }
