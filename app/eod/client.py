@@ -48,18 +48,24 @@ class Client(client.Client):
             "DL_REQUEST_ID",
             "DL_REQUEST_NAME",
             "DL_SNAPSHOT_START_TIME",
-            "DL_SNAPSHOT_TZ"
+            "DL_SNAPSHOT_TZ",
         ]
         for c in columns:
             if c in self.dataframe.columns:
                 self.dataframe = self.dataframe.drop(columns=[c])
 
     def _reformat_columns(self):
-        self.dataframe['LAST_UPDATE'] = self.dataframe.apply(self._reformat_last_update, axis=1)
-        self.dataframe['LAST_TRADE'] = self.dataframe['LAST_TRADE_DATE'] + ' ' + self.dataframe['LAST_TRADE_TIME']
-        self.dataframe['timestamp_read_utc'] = self.dataframe.apply(self.to_date, axis=1)
-        self.dataframe['timestamp_created_utc'] = datetime.datetime.utcnow()
-        del self.dataframe['LAST_TRADE']
+        self.dataframe["LAST_UPDATE"] = self.dataframe.apply(
+            self._reformat_last_update, axis=1
+        )
+        self.dataframe["LAST_TRADE"] = (
+            self.dataframe["LAST_TRADE_DATE"] + " " + self.dataframe["LAST_TRADE_TIME"]
+        )
+        self.dataframe["timestamp_read_utc"] = self.dataframe.apply(
+            self.to_date, axis=1
+        )
+        self.dataframe["timestamp_created_utc"] = datetime.datetime.utcnow()
+        del self.dataframe["LAST_TRADE"]
 
     def _save_dataframe_to_database(self):
         table = self.config["output_table"]
@@ -75,7 +81,7 @@ class Client(client.Client):
         )
 
         for ticker in tickers:
-            identifier = template.copy() 
+            identifier = template.copy()
             identifier["identifierValue"] = ticker
             result.append(identifier)
 
