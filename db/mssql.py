@@ -34,7 +34,7 @@ class MSSQLDatabase(object):
         )
         self.cnx = None
 
-    def select_table(self, table_name, columns=None):
+    def select_table(self, table_name, columns=None, where=None):
         """
         Select data from the specified table with optional columns.
 
@@ -48,7 +48,12 @@ class MSSQLDatabase(object):
         else:
             fcolumns = "*"
 
-        df = pd.read_sql(f"SELECT {fcolumns} FROM {table_name}", self.cnx)
+        query = f"SELECT {fcolumns} FROM {table_name}"
+        if where:
+            query = f"{query} {where}"
+
+        logging.info(query)
+        df = pd.read_sql(query, self.cnx)
         logging.info(f"Selected {len(df)} rows from {table_name} table")
         self.cnx.close()
         return df
