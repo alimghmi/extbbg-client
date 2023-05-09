@@ -34,7 +34,7 @@ def load_app(app):
     path = os.path.dirname(__file__)
     sys.path.append(os.path.join(path, app))
     loader_instance = getattr(importlib.import_module("loader"), "Tickers")(
-        app_config["input"]["table"], app_config["input"]["columns"]
+        app_config["input"]["table"], app_config["input"]["columns"], app_config["input"]["where"]
     )
     client_class = getattr(importlib.import_module("client"), "Client")
     return loader_instance, client_class, app_config
