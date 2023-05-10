@@ -72,7 +72,6 @@ class Client(client.Client):
         self.log.info(f"Inserting data to {table}")
         conn = mssql.MSSQLDatabase()
         conn.insert_table(self.dataframe, table)
-        # self.dataframe.to_csv(f'{table}.sample.csv')
 
     def generate_identifier_values(self, tickers):
         result = []
