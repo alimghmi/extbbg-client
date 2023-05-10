@@ -1,9 +1,10 @@
 import logging
 import urllib
 import warnings
-import pyodbc
+
 import numpy as np
 import pandas as pd
+import pyodbc
 from decouple import config
 from fast_to_sql import fast_to_sql
 from sqlalchemy import create_engine
@@ -11,7 +12,7 @@ from sqlalchemy import create_engine
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] [%(name)s:%(lineno)s]: %(message)s",
-)       
+)
 warnings.filterwarnings("ignore")
 
 

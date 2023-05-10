@@ -9,6 +9,7 @@ from urllib.parse import urljoin
 
 import pandas as pd
 import requests
+
 from beap.beap_auth import BEAPAdapter, Credentials, download
 from beap.sseclient import SSEClient
 
@@ -19,7 +20,6 @@ logging.basicConfig(
 
 
 class Client:
-
     HOST = "https://api.bloomberg.com"
     LISTENER_TIMEOUT_MIN = 45
 
@@ -97,7 +97,7 @@ class Client:
                 )
                 self.log.info("Reply was downloaded")
                 self.log.info("Prasing the downloaded json")
-                with gzip.open(output_file_path + ".gz", 'rt', encoding='utf-8') as f:
+                with gzip.open(output_file_path + ".gz", "rt", encoding="utf-8") as f:
                     json_data = json.load(f)
 
                 self.dataframe = pd.json_normalize(json_data)
@@ -163,8 +163,8 @@ class Client:
         universe_payload = {
             "@type": "Universe",
             "identifier": universe_id,
-            "title": self.config['app_name'],
-            "description": self.config['description'],
+            "title": self.config["app_name"],
+            "description": self.config["description"],
             "contains": tickers,
         }
 
@@ -186,7 +186,7 @@ class Client:
 
     def __save__(self):
         pass
-    
+
     def parse_tickers(self, tickers):
         pass
 
@@ -201,9 +201,9 @@ class Client:
     @staticmethod
     def create_identifier_template(identifier_type):
         return {
-            '@type': 'Identifier',
-            'identifierType': identifier_type,
-            'identifierValue': None,
+            "@type": "Identifier",
+            "identifierType": identifier_type,
+            "identifierValue": None,
         }
 
     def generate_identifier_values(self, tickers):

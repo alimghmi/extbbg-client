@@ -27,14 +27,16 @@ def load_app(app):
     app_config = get_config(app)
     if not app_config:
         raise ValueError(f"{app} app config not found")
-        
+
     if not app_exist(app_config["app_name"]):
         raise ValueError(f"{app} app not found")
 
     path = os.path.dirname(__file__)
     sys.path.append(os.path.join(path, app_config["app_name"]))
     loader_instance = getattr(importlib.import_module("loader"), "Tickers")(
-        app_config["input"]["table"], app_config["input"]["columns"], app_config["input"]["where"]
+        app_config["input"]["table"],
+        app_config["input"]["columns"],
+        app_config["input"]["where"],
     )
     client_class = getattr(importlib.import_module("client"), "Client")
     return loader_instance, client_class, app_config

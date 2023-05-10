@@ -2,7 +2,6 @@ from db import mssql
 
 
 class Tickers:
-
     def __init__(self, table_name, columns=None, where=None):
         self.df = None
         self.parsed = None
