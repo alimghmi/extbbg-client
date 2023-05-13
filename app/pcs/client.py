@@ -48,32 +48,6 @@ class Client(client.Client):
     def _add_new_columns(self):
         self.dataframe["crncy"] = None
 
-    def _remove_unnecessary_columns(self):
-        columns = [
-            "IDENTIFIER",
-            "RC",
-            "LAST_TRADE_TIME",
-            "LAST_TRADE_DATE",
-            "LAST_UPDATE",
-            "LAST_UPDATE_DT",
-            "PX_OPEN",
-            "PX_HIGH",
-            "PX_LOW",
-            "PX_LAST",
-            "PX_BID",
-            "PX_ASK",
-            "PX_VOLUME",
-            "crncy",
-            "HIGH_52WEEK",
-            "LOW_52WEEK",
-        ]
-
-        for c in self.dataframe.columns:
-            if c not in columns:
-                self.dataframe = self.dataframe.drop(columns=[c])
-
-        self.dataframe = self.dataframe[columns]
-
     def _reformat_columns(self):
         get_priority = lambda x: (self.priority[x] if x in self.priority else None)
         self.dataframe["LAST_UPDATE"] = self.dataframe.apply(
