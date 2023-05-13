@@ -43,17 +43,6 @@ class Client(client.Client):
         self._remove_unnecessary_columns()
         self._reformat_columns()
 
-    def _remove_unnecessary_columns(self):
-        columns = [
-            "DL_REQUEST_ID",
-            "DL_REQUEST_NAME",
-            "DL_SNAPSHOT_START_TIME",
-            "DL_SNAPSHOT_TZ",
-        ]
-        for c in columns:
-            if c in self.dataframe.columns:
-                self.dataframe = self.dataframe.drop(columns=[c])
-
     def _reformat_columns(self):
         self.dataframe["LAST_UPDATE"] = self.dataframe.apply(
             self._reformat_last_update, axis=1
