@@ -53,10 +53,20 @@ class Client:
         except requests.exceptions.HTTPError as err:
             self.log.error(err)
 
-    def listen(self):
+    def listen(self, file=None):
         """
         Listen to events from the Bloomberg API and process them.
         """
+        if file:
+            self.log.info("Reply was downloaded")
+            self.log.info("Prasing the downloaded json")
+            with gzip.open(file + ".gz", "rt", encoding="utf-8") as f:
+                json_data = json.load(f)
+
+            self.dataframe = pd.json_normalize(json_data)
+            self.status = True
+            return self.dataframe
+        
         request_id = "r" + self.session_id
         reply_timeout = datetime.timedelta(minutes=self.LISTENER_TIMEOUT_MIN)
         expiration_timestamp = datetime.datetime.utcnow() + reply_timeout
@@ -184,11 +194,42 @@ class Client:
         self.log.info("Universe successfully created at %s", universe_url)
         return universe_url
 
-    def __save__(self):
+    def save(self):
         pass
 
     def parse_tickers(self, tickers):
         pass
+
+    def create_field(self, fields):
+        fieldlist_id = 'f' + self.session_id
+        fieldlist_payload = {
+            '@type': 'DataFieldList',
+            'identifier': fieldlist_id,
+            'title': self.config["app_name"],
+            'description': self.config["description"],
+            'contains': fields,
+        }
+
+        self.log.info('Field list component payload:\n %s',
+                pprint.pformat(fieldlist_payload))
+            
+        fieldlists_url = urljoin(self.account_url, 'fieldLists/')
+        response = self.session.post(fieldlists_url, json=fieldlist_payload)
+        
+        if response.status_code != requests.codes.created:
+            self.log.error('Unexpected response status code: %s', response.status_code)
+            raise RuntimeError('Unexpected response')
+        
+        fieldlist_location = response.headers['Location']
+        fieldlist_url = urljoin(self.HOST, fieldlist_location)
+        self.log.info('Field list successfully created at %s', fieldlist_url)
+        return fieldlist_url
+
+    def _remove_unnecessary_columns(self):
+        columns = self.config["delete_columns"]
+        for c in columns:
+            if c in self.dataframe.columns:
+                self.dataframe = self.dataframe.drop(columns=[c])
 
     @staticmethod
     def random_id():
@@ -224,22 +265,19 @@ class Client:
     @staticmethod
     def to_date(row):
         x, y = row["LAST_UPDATE"], row["LAST_TRADE"]
-        date_str = x if isinstance(x, str) else y if isinstance(y, str) else None
-
+        date_str = x if x is not None else y if y is not None else None
         if date_str is None:
             return None
 
-        date_str = date_str.replace("T", " ")
+        date_str = str(date_str).replace("T", " ")
         date = Client._parse_date(
-            date_str, ["%Y-%m-%d %H:%M:%S.%f", "%Y-%m-%d %H:%M:%S"]
+            date_str, ["%Y-%m-%d %H:%M:%S.%f", "%Y-%m-%d %H:%M:%S", "%Y%m%d"]
         )
-
         return date.strftime("%Y-%m-%d %H:%M:%S") if date else None
 
     @staticmethod
     def _reformat_last_update(row):
         x, y = row["LAST_UPDATE"], row["LAST_UPDATE_DT"]
-
         if not isinstance(x, str) and not isinstance(y, str):
             return None
 
