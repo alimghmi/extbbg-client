@@ -7,6 +7,7 @@
         "columns": ["bbg_comp_ticker"],
         "where": "where eod_price_source = 'bbg_sp' and active = 'true'"
     },
+    "delete_columns": ["DL_REQUEST_ID","DL_REQUEST_NAME","DL_SNAPSHOT_START_TIME","DL_SNAPSHOT_TZ"],
     "output_table": "etl.extbbg_last_intra_sp",
     "field_url": "https://api.bloomberg.com/eap/catalogs/793986/fieldLists/f20220313073336e4ed00/"
 }
