@@ -9,15 +9,6 @@ class Client(client.Client):
         super().__init__(credential, config)
         self.priority = {}
 
-    def save(self):
-        if not self.status or not len(self.dataframe):
-            self.log.info("Dataframe NOT found")
-            return False
-
-        self._process_dataframe()
-        self._save_dataframe_to_database()
-        return True
-
     def _process_dataframe(self):
         self._add_new_columns()
         self._remove_unnecessary_columns()

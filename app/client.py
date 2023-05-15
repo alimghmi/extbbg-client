@@ -217,6 +217,15 @@ class Client:
         return universe_url
 
     def save(self):
+        if not self.status or not len(self.dataframe):
+            self.log.info("Dataframe NOT found")
+            return False
+
+        self._process_dataframe()
+        self._save_dataframe_to_database()
+        return True
+
+    def _process_dataframe(self):
         pass
 
     def parse_tickers(self, tickers):
