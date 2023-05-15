@@ -7,4 +7,4 @@ class Tickers(loader.Tickers):
 
     def parse(self):
         records = self.df.to_dict("list")
-        self.parsed = list(records.values())[0][:5]
+        self.parsed = list(records.values())[0]
