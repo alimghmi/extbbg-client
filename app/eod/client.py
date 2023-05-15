@@ -8,28 +8,6 @@ class Client(client.Client):
     def __init__(self, credential, config):
         super().__init__(credential, config)
 
-    def request(self, universe, field, trigger):
-        payload = {
-            "@type": "DataRequest",
-            "identifier": None,
-            "title": self.config["app_name"],
-            "description": self.config["description"],
-            "universe": universe,
-            "fieldList": field,
-            "trigger": trigger,
-            "formatting": {
-                "@type": "MediaType",
-                "outputMediaType": "application/json",
-            },
-            "terminalIdentity": {
-                "@type": "BlpTerminalIdentity",
-                "userNumber": 29504171,
-                "serialNumber": 271249,
-                "workStation": 1,
-            },
-        }
-        return self._request(payload)
-
     def save(self):
         if not self.status or not len(self.dataframe):
             self.log.info("Dataframe NOT found")

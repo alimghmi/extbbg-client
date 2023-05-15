@@ -116,6 +116,28 @@ class Client:
         else:
             self.log.info("Reply NOT delivered, try to increase waiter loop timeout")
 
+    def request(self, universe, field, trigger):
+        payload = {
+            "@type": "DataRequest",
+            "identifier": None,
+            "title": self.config["app_name"],
+            "description": self.config["description"],
+            "universe": universe,
+            "fieldList": field,
+            "trigger": trigger,
+            "formatting": {
+                "@type": "MediaType",
+                "outputMediaType": "application/json",
+            },
+            "terminalIdentity": {
+                "@type": "BlpTerminalIdentity",
+                "userNumber": 29504171,
+                "serialNumber": 271249,
+                "workStation": 1,
+            },
+        }
+        return self._request(payload)
+
     def _request(self, payload):
         """
         Send a data request to the Bloomberg API with the given payload.
