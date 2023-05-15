@@ -1,4 +1,5 @@
 import importlib
+import json
 import logging
 import os
 import sys
@@ -13,6 +14,7 @@ logging.basicConfig(
 )
 
 APP = config("APP", cast=str)
+BBG_CRED = json.loads(config("BBG_CRED", cast=str))
 logger = logging.getLogger(__name__)
 
 
@@ -46,7 +48,7 @@ def main():
     loader, Client, app_config = load_app(APP)
     logger.info(f"Launching {APP} App...")
     tickers = loader.fetch()
-    client = Client("credential.txt", app_config)
+    client = Client(BBG_CRED, app_config)
     universe = client.create_universe(tickers)
     field = app_config["field_url"]
     trigger = client.get_trigger()

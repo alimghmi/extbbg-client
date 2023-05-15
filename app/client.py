@@ -36,7 +36,7 @@ class Client:
         self.config = config
         self.session_id = self.random_id()
         self.log = logging.getLogger(__name__)
-        self.credential = Credentials.from_file(credential)
+        self.credential = Credentials.from_dict(credential)
         self.initialize_sse_client()
 
     def initialize_sse_client(self):
