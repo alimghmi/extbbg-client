@@ -12,6 +12,7 @@ import requests
 
 from beap.beap_auth import BEAPAdapter, Credentials, download
 from beap.sseclient import SSEClient
+from db import mssql
 
 logging.basicConfig(
     level=logging.INFO,
@@ -227,6 +228,12 @@ class Client:
 
     def _process_dataframe(self):
         pass
+
+    def _save_dataframe_to_database(self):
+        table = self.config["output_table"]
+        self.log.info(f"Inserting data to {table}")
+        conn = mssql.MSSQLDatabase()
+        conn.insert_table(self.dataframe, table)
 
     def parse_tickers(self, tickers):
         pass

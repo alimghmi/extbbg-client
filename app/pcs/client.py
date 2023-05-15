@@ -32,12 +32,6 @@ class Client(client.Client):
         self.dataframe["priority"] = self.dataframe["IDENTIFIER"].apply(get_priority)
         del self.dataframe["LAST_TRADE"]
 
-    def _save_dataframe_to_database(self):
-        table = self.config["output_table"]
-        self.log.info(f"Inserting data to {table}")
-        conn = mssql.MSSQLDatabase()
-        conn.insert_table(self.dataframe, table)
-
     def generate_identifier_values(self, tickers):
         result = []
         template = self.create_identifier_template(
