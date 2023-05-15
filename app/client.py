@@ -66,7 +66,7 @@ class Client:
             self.dataframe = pd.json_normalize(json_data)
             self.status = True
             return self.dataframe
-        
+
         request_id = "r" + self.session_id
         reply_timeout = datetime.timedelta(minutes=self.LISTENER_TIMEOUT_MIN)
         expiration_timestamp = datetime.datetime.utcnow() + reply_timeout
@@ -201,28 +201,29 @@ class Client:
         pass
 
     def create_field(self, fields):
-        fieldlist_id = 'f' + self.session_id
+        fieldlist_id = "f" + self.session_id
         fieldlist_payload = {
-            '@type': 'DataFieldList',
-            'identifier': fieldlist_id,
-            'title': self.config["app_name"],
-            'description': self.config["description"],
-            'contains': fields,
+            "@type": "DataFieldList",
+            "identifier": fieldlist_id,
+            "title": self.config["app_name"],
+            "description": self.config["description"],
+            "contains": fields,
         }
 
-        self.log.info('Field list component payload:\n %s',
-                pprint.pformat(fieldlist_payload))
-            
-        fieldlists_url = urljoin(self.account_url, 'fieldLists/')
+        self.log.info(
+            "Field list component payload:\n %s", pprint.pformat(fieldlist_payload)
+        )
+
+        fieldlists_url = urljoin(self.account_url, "fieldLists/")
         response = self.session.post(fieldlists_url, json=fieldlist_payload)
-        
+
         if response.status_code != requests.codes.created:
-            self.log.error('Unexpected response status code: %s', response.status_code)
-            raise RuntimeError('Unexpected response')
-        
-        fieldlist_location = response.headers['Location']
+            self.log.error("Unexpected response status code: %s", response.status_code)
+            raise RuntimeError("Unexpected response")
+
+        fieldlist_location = response.headers["Location"]
         fieldlist_url = urljoin(self.HOST, fieldlist_location)
-        self.log.info('Field list successfully created at %s', fieldlist_url)
+        self.log.info("Field list successfully created at %s", fieldlist_url)
         return fieldlist_url
 
     def _remove_unnecessary_columns(self):
