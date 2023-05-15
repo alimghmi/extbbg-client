@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.10
 
 RUN mkdir /opt/app
 WORKDIR /opt/app
@@ -24,8 +24,8 @@ RUN apt-get install -y unixodbc-dev
 
 ADD requirements.txt .
 
-RUN pip3 install -r requirements.txt
+RUN pip install -r requirements.txt
 
 ADD . .
 
-CMD [ "python3", "-m", "client.main" ]
+CMD [ "python", "-m", "app.main" ]
