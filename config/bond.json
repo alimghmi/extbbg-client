@@ -1,13 +1,13 @@
 {
     "app_name": "eod",
     "description": "BOND App",
-    "is_identifier_isin": false,
+    "is_identifier_isin": true,
     "input": {
         "table": "md.securities",
-        "columns": ["bbg_comp_ticker"],
+        "columns": ["isin"],
         "where": "where eod_price_source = 'bbg' and security_source = 'bonds' and active = 'true'"
     },
     "delete_columns": ["DL_REQUEST_ID","DL_REQUEST_NAME","DL_SNAPSHOT_START_TIME","DL_SNAPSHOT_TZ", "PX_VOLUME"],
     "output_table": "etl.extbbg_last_eod_bonds",
-    "field_url": "https://api.bloomberg.com/eap/catalogs/793986/fieldLists/f202305131502242b5398/"
+    "field_url": "https://api.bloomberg.com/eap/catalogs/793986/fieldLists/f20230515090444889a1c/"
 }
