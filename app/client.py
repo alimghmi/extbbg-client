@@ -4,12 +4,12 @@ import json
 import logging
 import os
 import pprint
-import uuid
 from urllib.parse import urljoin
 
 import pandas as pd
 import requests
 
+from app.utils import Utils
 from beap.beap_auth import BEAPAdapter, Credentials, download
 from beap.sseclient import SSEClient
 from db import mssql
@@ -34,8 +34,9 @@ class Client:
         self.status = False
         self.dataframe = None
         self.config = config
-        self.session_id = self.random_id()
         self.log = logging.getLogger(__name__)
+        self.utils = Utils()
+        self.session_id = self.utils.random_id()
         self.credential = Credentials.from_dict(credential)
         self.initialize_sse_client()
 
@@ -235,9 +236,6 @@ class Client:
         conn = mssql.MSSQLDatabase()
         conn.insert_table(self.dataframe, table)
 
-    def parse_tickers(self, tickers):
-        pass
-
     def create_field(self, fields):
         fieldlist_id = "f" + self.session_id
         fieldlist_payload = {
@@ -270,61 +268,8 @@ class Client:
             if c in self.dataframe.columns:
                 self.dataframe = self.dataframe.drop(columns=[c])
 
-    @staticmethod
-    def random_id():
-        """
-        Generate a random session ID.
-        """
-        uid = str(uuid.uuid1())[:6]
-        return datetime.datetime.utcnow().strftime("%Y%m%d%H%M%S") + uid
-
-    @staticmethod
-    def create_identifier_template(identifier_type):
-        return {
-            "@type": "Identifier",
-            "identifierType": identifier_type,
-            "identifierValue": None,
-        }
-
     def generate_identifier_values(self, tickers):
         pass
 
     def parse_tickers(self, tickers):
         return self.generate_identifier_values(tickers)
-
-    @staticmethod
-    def _parse_date(date_str, formats):
-        for fmt in formats:
-            try:
-                return datetime.datetime.strptime(date_str, fmt)
-            except ValueError:
-                continue
-        return None
-
-    @staticmethod
-    def to_date(row):
-        x, y = row["LAST_UPDATE"], row["LAST_TRADE"]
-        date_str = x if x is not None else y if y is not None else None
-        if date_str is None:
-            return None
-
-        date_str = str(date_str).replace("T", " ")
-        date = Client._parse_date(
-            date_str, ["%Y-%m-%d %H:%M:%S.%f", "%Y-%m-%d %H:%M:%S", "%Y%m%d"]
-        )
-        return date.strftime("%Y-%m-%d %H:%M:%S") if date else None
-
-    @staticmethod
-    def _reformat_last_update(row):
-        x, y = row["LAST_UPDATE"], row["LAST_UPDATE_DT"]
-        if not isinstance(x, str) and not isinstance(y, str):
-            return None
-
-        if ":" not in x:
-            return Client._parse_date(x, ["%Y%m%d"])
-        else:
-            date = Client._parse_date(x, ["%Y-%m-%d %H:%M:%S"])
-            if not date:
-                date = Client._parse_date(f"{y} {x}", ["%Y-%m-%d %H:%M:%S"])
-
-        return date.strftime("%Y-%m-%d %H:%M:%S") if date else None
