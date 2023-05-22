@@ -1,6 +1,6 @@
 # EXTBBG-CLIENT
 
-A Python application that fetches tickers, creates a universe, and triggers requests to the Bloomberg API. The application listens for responses and saves the data to the database.
+EXTBBG-CLIENT is a comprehensive solution to manage financial instrument data by utilizing Bloomberg's BEAP API endpoints. The application fetches tickers, creates a universe, and triggers requests to the Bloomberg API to retrieve essential financial data points, such as price, volume, and more. Once the API responds, the application listens for the information and stores it in the database for future use. This application is designed to provide financial analysts and investors with timely and accurate financial data, enabling them to make informed decisions. Bloomberg's API offers a wealth of financial data, and EXTBBG-CLIENT is designed to make it easy to access and manage this information effectively.
 
 ## Table of Contents
 
