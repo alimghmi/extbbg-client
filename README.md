@@ -57,7 +57,7 @@ The main.py file is the entry point of the application. It loads the configurati
 
 The env file contains environment variables such as BBG_CRED, which is a JSON object that contains the Bloomberg API credentials.
 
-The APP environment variable in this project determines which mode the application should work on. The APP variable is defined in the .env file and can have values such as eod, eod_isin, intra, intra_isin, bond, and pcs. Each mode has its own configuration file inside the config folder in .json format, such as eod.json, eod_isin.json, etc.
+The APP environment variable in this project determines which mode the application should work on. The APP variable is defined in the .env file and can have values such as eod, eod_isin, and intra_isin. Each mode has its own configuration file inside the config folder in .json format, such as eod.json, eod_isin.json, etc.
 
 The configuration files contain information such as the name of the application, the description of the application, whether the identifier is ISIN, the input table, columns, and where clause, the output table, the field URL, and more. The load_app function in the main.py file loads the configuration file based on the APP variable and initializes the loader, Client, and app_config objects.
 
