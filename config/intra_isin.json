@@ -9,5 +9,5 @@
     },
     "delete_columns": ["DL_REQUEST_ID","DL_REQUEST_NAME","DL_SNAPSHOT_START_TIME","DL_SNAPSHOT_TZ"],
     "output_table": "etl.extbbg_last_intra_sp",
-    "field_url": "https://api.bloomberg.com/eap/catalogs/793986/fieldLists/f20220313073336e4ed00/"
+    "field_url": "https://api.bloomberg.com/eap/catalogs/123456/fieldLists/f20220313073336e4ed00/"
 }
