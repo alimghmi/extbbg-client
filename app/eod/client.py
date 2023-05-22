@@ -14,20 +14,20 @@ class Client(client.Client):
 
     def _reformat_columns(self):
         self.dataframe["LAST_UPDATE"] = self.dataframe.apply(
-            self._reformat_last_update, axis=1
+            self.utils._reformat_last_update, axis=1
         )
         self.dataframe["LAST_TRADE"] = (
             self.dataframe["LAST_TRADE_DATE"] + " " + self.dataframe["LAST_TRADE_TIME"]
         )
         self.dataframe["timestamp_read_utc"] = self.dataframe.apply(
-            self.to_date, axis=1
+            self.utils.to_date, axis=1
         )
         self.dataframe["timestamp_created_utc"] = datetime.datetime.utcnow()
         del self.dataframe["LAST_TRADE"]
 
     def generate_identifier_values(self, tickers):
         result = []
-        template = self.create_identifier_template(
+        template = self.utils.create_identifier_template(
             "ISIN" if self.config["is_identifier_isin"] else "TICKER"
         )
 
