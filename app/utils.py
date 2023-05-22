@@ -3,7 +3,6 @@ import uuid
 
 
 class Utils:
-
     @staticmethod
     def random_id():
         """
@@ -56,4 +55,3 @@ class Utils:
                 date = Utils._parse_date(f"{y} {x}", ["%Y-%m-%d %H:%M:%S"])
 
         return date.strftime("%Y-%m-%d %H:%M:%S") if date else None
-    
