@@ -111,8 +111,8 @@ The application will start in the specified mode and begin processing data from 
 
 ## Authors
 
-- Ali Moghimi (~[alimghmi](https://github.com/alimghmi)~)
-- Clemens Struck (~[clemstruck](https://github.com/clemstruck)~)
+- Ali Moghimi ([alimghmi](https://github.com/alimghmi))
+- Clemens Struck ([clemstruck](https://github.com/clemstruck))
 
 ## Contribution
 
