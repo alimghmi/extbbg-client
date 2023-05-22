@@ -11,6 +11,8 @@ EXTBBG-CLIENT is a comprehensive solution to manage financial instrument data by
   - [Environment Variables](#environment-variables)
   - [Configuration Files](#configuration-files)
   - [Docker Deployment](#docker-deployment)
+  - [Authors](#authors)
+  - [Contribution](#contribution)
 
 ## Project Structure
 ```
@@ -68,12 +70,13 @@ Create a `.env` file in the project root directory with the following variables:
 
 ```
 APP=eod
-APP=eod_isin
 
-APP=intra_isin
 BBG_CRED='{"client_id":"","client_secret":"","name":"mycred","scopes":["eap","beapData","reportingapi"],"expiration_date":1730180683882,"created_date":1682747083882}'
 
-MSSQL_SERVER=mydb.database.windows.net MSSQL_DATABASE=db MSSQL_USERNAME=user MSSQL_PASSWORD=123456
+MSSQL_SERVER=mydb.database.windows.net 
+MSSQL_DATABASE=db 
+MSSQL_USERNAME=user 
+MSSQL_PASSWORD=123456
 ```
 
 - `APP`: Determines the mode of the application. Possible values: `eod`, `eod_isin`, `intra_isin`
@@ -105,3 +108,23 @@ docker run --env-file .env -it project-name
 ```
 
 The application will start in the specified mode and begin processing data from the Bloomberg API.
+
+## Authors
+
+- Ali Moghimi (~[alimghmi](https://github.com/alimghmi)~)
+- Clemens Struck (~[clemstruck](https://github.com/clemstruck)~)
+
+## Contribution
+
+Contributions are welcomed and greatly appreciated. To contribute to this project, follow these steps:
+
+1. Fork the repository by clicking the "Fork" button on the top right corner of the project's main page.
+2. Clone your forked repository to your local machine: `git clone https://github.com/your_username/project-name.git`
+3. Create a new branch for your feature: `git checkout -b feature/new-feature`
+4. Make your changes and commit them: `git commit -m 'Add new feature'`
+5. Push the changes to your forked repository: `git push origin feature/new-feature`
+6. Create a Pull Request from your forked repository to the original repository.
+
+Before submitting a Pull Request, please ensure that your code follows the project's coding standards. Also, update the README.md file if necessary.
+
+For major changes or feature requests, please open an issue first to discuss what you would like to change. This allows for better collaboration and a more efficient process.
