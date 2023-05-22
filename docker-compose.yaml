@@ -1,0 +1,11 @@
+version: '3'
+services:
+  app:
+    container_name: extbbg-client
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
