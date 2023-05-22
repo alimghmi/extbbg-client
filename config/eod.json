@@ -3,7 +3,7 @@
     "description": "EOD App",
     "is_identifier_isin": false,
     "input": {
-        "table": "md.securities",
+        "table": "test.securities",
         "columns": ["bbg_comp_ticker"],
         "where": "where eod_price_source = 'bbg' and active = 'true'"
     },

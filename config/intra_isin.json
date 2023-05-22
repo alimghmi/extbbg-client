@@ -3,7 +3,7 @@
     "description": "ISIN App",
     "is_identifier_isin": true,
     "input": {
-        "table": "md.securities",
+        "table": "test.securities",
         "columns": ["bbg_comp_ticker"],
         "where": "where eod_price_source = 'bbg_sp' and active = 'true'"
     },
