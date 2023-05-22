@@ -7,6 +7,7 @@ EXTBBG-CLIENT is a comprehensive solution to manage financial instrument data by
 - [EXTBBG-CLIENT](#extbbg-client)
   - [Table of Contents](#table-of-contents)
   - [Project Structure](#project-structure)
+  - [Understanding the Code](#understanding-the-code)
   - [Environment Variables](#environment-variables)
   - [Configuration Files](#configuration-files)
   - [Docker Deployment](#docker-deployment)
@@ -49,6 +50,18 @@ EXTBBG-CLIENT is a comprehensive solution to manage financial instrument data by
 - The `db` directory contains the database connection logic.
 - `Dockerfile` is used for building the Docker image.
 
+
+## Understanding the Code
+
+The main.py file is the entry point of the application. It loads the configuration file based on the APP variable and initializes the loader, Client, and app_config objects. The loader object fetches the tickers, and the Client object creates the universe, triggers, and requests. The listen() method listens for responses from Bloomberg and saves the data to the database.
+
+The env file contains environment variables such as BBG_CRED, which is a JSON object that contains the Bloomberg API credentials.
+
+The APP environment variable in this project determines which mode the application should work on. The APP variable is defined in the .env file and can have values such as eod, eod_isin, intra, intra_isin, bond, and pcs. Each mode has its own configuration file inside the config folder in .json format, such as eod.json, eod_isin.json, etc.
+
+The configuration files contain information such as the name of the application, the description of the application, whether the identifier is ISIN, the input table, columns, and where clause, the output table, the field URL, and more. The load_app function in the main.py file loads the configuration file based on the APP variable and initializes the loader, Client, and app_config objects.
+
+
 ## Environment Variables
 
 Create a `.env` file in the project root directory with the following variables:
@@ -63,7 +76,7 @@ BBG_CRED='{"client_id":"","client_secret":"","name":"mycred","scopes":["eap","be
 MSSQL_SERVER=mydb.database.windows.net MSSQL_DATABASE=db MSSQL_USERNAME=user MSSQL_PASSWORD=123456
 ```
 
-- `APP`: Determines the mode of the application. Possible values: `eod`, `eod_isin`, `intra`, `intra_isin`, `bond`, `pcs`.
+- `APP`: Determines the mode of the application. Possible values: `eod`, `eod_isin`, `intra_isin`
 - `BBG_CRED`: JSON object containing the Bloomberg API credentials.
 - `MSSQL_*`: Variables for connecting to the Microsoft SQL Server.
 
