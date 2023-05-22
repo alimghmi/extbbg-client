@@ -119,7 +119,7 @@ The application will start in the specified mode and begin processing data from 
 Contributions are welcomed and greatly appreciated. To contribute to this project, follow these steps:
 
 1. Fork the repository by clicking the "Fork" button on the top right corner of the project's main page.
-2. Clone your forked repository to your local machine: `git clone https://github.com/your_username/project-name.git`
+2. Clone your forked repository to your local machine
 3. Create a new branch for your feature: `git checkout -b feature/new-feature`
 4. Make your changes and commit them: `git commit -m 'Add new feature'`
 5. Push the changes to your forked repository: `git push origin feature/new-feature`
